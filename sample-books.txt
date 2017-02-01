@@ -1,0 +1,3 @@
+{"title":"Dune", "author":"Frank Herbert"}
+{"title":"Lonesome Dove", "isbn":12345, "author":"Larry McMurtry"}
+{"title":"Pride and Prejudice", "genre":["romance","classic"], "author":"Jane Austen", "checkedIn":true}
