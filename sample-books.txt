@@ -1,8 +1,10 @@
-{"title":"Dune", "author":"Frank Herbert"}
-{"title":"Lonesome Dove", "isbn":12345, "author":"Larry McMurtry"}
+{"title":"Dune", "author":"Frank Herbert", "checkedIn":true}
+{"title":"Lonesome Dove", "isbn":12345, "author":"Larry McMurtry", "checkedIn":true}
 {"title":"Pride and Prejudice", "genre":["romance","classic"], "author":"Jane Austen", "checkedIn":true}
 {"title":"Ender's Game", "genre":["sci-fi","paperback"], "author":"Orson Scott Card", "checkedIn":true}
+{"title":"On the Road", "author":"Jack Kerouac", "checkedIn":true}
 
 {"name":"Arthur Dent"}
 {"name":"Katniss Everdeen", "balance":0.50}
 {"name":"Paul Atreides", "balance":2.75, "checked_out":["/books/6401356696911872", "/books/5838406743490560"]}
+{"name":"Peter Nguyen", "balance":3.00}

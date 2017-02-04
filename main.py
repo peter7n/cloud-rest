@@ -4,9 +4,17 @@ import webapp2
 import json
 import re
 
-class HelloWebapp2(webapp2.RequestHandler):
+class Home(webapp2.RequestHandler):
     def get(self):
-        self.response.write('Hello, webapp2!')
+        self.response.write('CS496 - REST Implementation - Author: Peter Nguyen')
+
+    def delete(self):
+        # Delete all Datastore entries
+        listOfBookKeys = Book.query().fetch(keys_only=True)
+        listOfCustomerKeys = Customer.query().fetch(keys_only=True)
+        ndb.delete_multi(listOfBookKeys)
+        ndb.delete_multi(listOfCustomerKeys)
+        self.response.write("All entries successfully delted.")
 
 class Book(ndb.Model):
     title = ndb.StringProperty(required=True)
@@ -27,17 +35,19 @@ class BookHandler(webapp2.RequestHandler):
         # propagate values for newBook
         for bKey, bValue in bookData.iteritems():
             setattr(newBook, bKey, bValue)
+        newBook.id = newBook.key.id()
+        newBook.self = "/books/" + bookId
         newBook.put()
         bookDict = newBook.to_dict()
-        bookDict['self'] = '/books/' + str(newBook.key.id())
+        # bookDict['self'] = '/books/' + str(newBook.key.id())
         self.response.write(json.dumps(bookDict))
 
     def get(self, bookId=None, queryString=None):
         if bookId:
             bookObj = Book.get_by_id(int(bookId))
             bookObjDict = bookObj.to_dict()
-            bookObjDict['id'] = bookObj.key.id()
-            bookObjDict['self'] = "/books/" + bookId
+            # bookObjDict['id'] = bookObj.key.id()
+            # bookObjDict['self'] = "/books/" + bookId
             self.response.write(json.dumps(bookObjDict))
         # Check for a query string value
         qStrVal = self.request.get('checkedIn')
@@ -53,11 +63,11 @@ class BookHandler(webapp2.RequestHandler):
                     checkedOutList.append(result.to_dict())
             self.response.write(checkedOutList)
 
-    def delete(self, idParam=None):
-        if idParam:
-            bookObj = Book.get_by_id(int(idParam))
+    def delete(self, bookId=None):
+        if bookId:
+            bookObj = Book.get_by_id(int(bookId))
             bookObj.key.delete()
-            self.response.write("entity deleted")
+            self.response.write(bookObj.title + " has been deleted.")
 
     def patch(self, bookId=None):
         if bookId:
@@ -83,23 +93,23 @@ class CustomerHandler(webapp2.RequestHandler):
         customerDict['self'] = '/customers/' + str(newCustomer.key.id())
         self.response.write(json.dumps(customerDict))
 
-    def get(self, idParam=None):
-        if idParam:
-            customerObj = Customer.get_by_id(int(idParam))
+    def get(self, customerId=None):
+        if customerId:
+            customerObj = Customer.get_by_id(int(customerId))
             customerObjDict = customerObj.to_dict()
             customerObjDict['id'] = customerObj.key.id()
-            customerObjDict['self'] = "/customers/" + idParam
+            customerObjDict['self'] = "/customers/" + customerId
             self.response.write(json.dumps(customerObjDict))
 
-    def delete(self, idParam=None):
-        if idParam:
-            customerObj = Customer.get_by_id(int(idParam))
+    def delete(self, customerId=None):
+        if customerId:
+            customerObj = Customer.get_by_id(int(customerId))
             customerObj.key.delete()
-            self.response.write("entity deleted")
+            self.response.write(customerObj.name + " has been deleted.")
 
-    def patch(self, idParam=None):
-        if idParam:
-            customerObj = Customer.get_by_id(int(idParam))
+    def patch(self, customerId=None):
+        if customerId:
+            customerObj = Customer.get_by_id(int(customerId))
             customerData = json.loads(self.request.body)
             # patch attribute values for customerObj
             for cKey, cValue in customerData.iteritems():
@@ -117,8 +127,8 @@ class CustomerBooksHandler(webapp2.RequestHandler):
             booksCheckedOut = customerObj.checked_out
             # Fetch book links from checked_out list
             for book in booksCheckedOut:
-                urlTest = "http://localhost:8080" + book
-                result = urlfetch.fetch(urlTest)
+                url = "http://localhost:8080" + book
+                result = urlfetch.fetch(url)
                 if result.status_code == 200:
                     bookList.append(result.content)
                 else:
@@ -136,7 +146,7 @@ class CheckoutHandler(webapp2.RequestHandler):
             #Set book status to checked out
             bookObj.checkedIn = False
             bookObj.put()
-            self.response.write(customerObj.to_dict())
+            self.response.write(json.dumps(customerObj.to_dict()))
             self.response.write(bookObj.to_dict())
 
     def delete(self, customerId=None, bookId=None):
@@ -158,19 +168,19 @@ new_allowed_methods = allowed_methods.union(('PATCH',))
 webapp2.WSGIApplication.allowed_methods = new_allowed_methods
 
 app = webapp2.WSGIApplication([
-    ('/', HelloWebapp2),
+    ('/', Home),
+
     ('/books', BookHandler),
 
     webapp2.Route(r'/books/<bookId:\d+>', handler=BookHandler),
 
     webapp2.Route(r'/books<queryString:\s+>', handler=BookHandler),
 
-    ('/customer', CustomerHandler),
-    (r'/customers/(\d+)', CustomerHandler),
+    ('/customers', CustomerHandler),
+
+    webapp2.Route(r'/customers/<customerId:\d+>', handler=CustomerHandler),
 
     webapp2.Route(r'/customers/<customerId:\d+>/books', handler=CustomerBooksHandler),
 
     webapp2.Route(r'/customers/<customerId:\d+>/books/<bookId:\d+>', handler=CheckoutHandler),
-
-    webapp2.Route(r'/books?checkedIn=<customerId:\d+>', handler=CheckoutHandler),
 ], debug=True)
