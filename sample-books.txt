@@ -1,7 +1,8 @@
 {"title":"Dune", "author":"Frank Herbert"}
 {"title":"Lonesome Dove", "isbn":12345, "author":"Larry McMurtry"}
 {"title":"Pride and Prejudice", "genre":["romance","classic"], "author":"Jane Austen", "checkedIn":true}
+{"title":"Ender's Game", "genre":["sci-fi","paperback"], "author":"Orson Scott Card", "checkedIn":true}
 
 {"name":"Arthur Dent"}
 {"name":"Katniss Everdeen", "balance":0.50}
-{"name":"Paul Atreides", "balance":2.75, "checked_out":[""]
+{"name":"Paul Atreides", "balance":2.75, "checked_out":["/books/6401356696911872", "/books/5838406743490560"]}
