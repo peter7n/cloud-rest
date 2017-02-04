@@ -35,19 +35,17 @@ class BookHandler(webapp2.RequestHandler):
         # propagate values for newBook
         for bKey, bValue in bookData.iteritems():
             setattr(newBook, bKey, bValue)
-        newBook.id = newBook.key.id()
-        newBook.self = "/books/" + bookId
         newBook.put()
         bookDict = newBook.to_dict()
-        # bookDict['self'] = '/books/' + str(newBook.key.id())
+        bookDict['self'] = '/books/' + str(newBook.key.id())
         self.response.write(json.dumps(bookDict))
 
     def get(self, bookId=None, queryString=None):
         if bookId:
             bookObj = Book.get_by_id(int(bookId))
             bookObjDict = bookObj.to_dict()
-            # bookObjDict['id'] = bookObj.key.id()
-            # bookObjDict['self'] = "/books/" + bookId
+            bookObjDict['id'] = bookObj.key.id()
+            bookObjDict['self'] = "/books/" + bookId
             self.response.write(json.dumps(bookObjDict))
         # Check for a query string value
         qStrVal = self.request.get('checkedIn')
