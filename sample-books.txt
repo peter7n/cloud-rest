@@ -6,5 +6,5 @@
 
 {"name":"Arthur Dent"}
 {"name":"Katniss Everdeen", "balance":0.50}
-{"name":"Paul Atreides", "balance":2.75, "checked_out":["/books/6401356696911872", "/books/5838406743490560"]}
+{"name":"Paul Atreides", "balance":2.75}
 {"name":"Peter Nguyen", "balance":3.00}
